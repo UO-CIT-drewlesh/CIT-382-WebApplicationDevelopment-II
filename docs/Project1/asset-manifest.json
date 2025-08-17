@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/CIT-382-WebApplicationDevelopment-II/Project1/static/css/main.d7a1fbf6.css",
+    "main.js": "/CIT-382-WebApplicationDevelopment-II/Project1/static/js/main.b2eb5806.js",
+    "index.html": "/CIT-382-WebApplicationDevelopment-II/Project1/index.html",
+    "main.d7a1fbf6.css.map": "/CIT-382-WebApplicationDevelopment-II/Project1/static/css/main.d7a1fbf6.css.map",
+    "main.b2eb5806.js.map": "/CIT-382-WebApplicationDevelopment-II/Project1/static/js/main.b2eb5806.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.d7a1fbf6.css",
+    "static/js/main.b2eb5806.js"
+  ]
+}

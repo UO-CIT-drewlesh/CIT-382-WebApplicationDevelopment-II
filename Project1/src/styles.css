@@ -1,0 +1,76 @@
+.App {
+  font-family: sans-serif;
+  text-align: center;
+  background-color: #eceded;
+}
+
+label {
+  color: black;
+  font-size: 16px;
+  padding: 2px;
+  margin-right: 5px;
+}
+
+input {
+  margin: 1px;
+  padding: 2px;
+}
+
+.checkbox {
+  margin-top: 10px;
+}
+
+button {
+  margin-top: 10px;
+}
+
+span.error {
+  padding: 4px;
+  height: 100vh;
+  color: red;
+  font-size: 10px;
+}
+
+.title {
+  font-size: 30px;
+  margin: 4px;
+  color: black;
+  text-shadow: 1px -2px wheat;
+  text-decoration: solid underline black 3px;
+}
+
+.studentInfoTitle {
+  font-size: 20px;
+  margin: 4px;
+  text-decoration: solid underline black 3px;
+  text-shadow: 1px -2px wheat;
+}
+
+.studentInfoKey {
+  font-size: 10px;
+  font-weight: bold;
+  font-style: italic;
+  color: grey;
+}
+
+.displayData {
+  margin-top: 4px;
+}
+
+.studentInfo {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  padding: 1px;
+  margin-bottom: 5px;
+  background-color: #efefe7;
+}
+
+.studentCount {
+  font-weight: bold;
+  margin-left: 4px;
+}
+
+.studentContent {
+  flex-grow: 1;
+}
