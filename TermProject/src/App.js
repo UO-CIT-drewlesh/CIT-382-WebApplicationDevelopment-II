@@ -1,4 +1,4 @@
-import "/public/images/filter.png";
+import "./images/filter.png";
 import "./styles.css";
 import React, { useState, useEffect, useMemo } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";

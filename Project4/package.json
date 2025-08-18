@@ -1,15 +1,14 @@
 {
-  "name": "react",
+  "name": "termproject",
   "version": "1.0.0",
   "description": "",
   "keywords": [],
   "main": "src/index.tsx",
   "dependencies": {
-    "lodash": "4.17.21",
+    "fastify": "4.26.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-scripts": "5.0.1",
-    "uuid": "9.0.1"
+    "react-scripts": "5.0.1"
   },
   "devDependencies": {
     "@types/react": "18.2.38",
@@ -29,5 +28,5 @@
     "not ie <= 11",
     "not op_mini all"
   ],
-  "homepage": "https://UO-CIT-drewlesh.github.io/CIT-382-WebApplicationDevelopment-II/Project4"
+  "homepage": "https://UO-CIT-drewlesh.github.io/CIT-382-WebApplicationDevelopment-II/Project5"
 }

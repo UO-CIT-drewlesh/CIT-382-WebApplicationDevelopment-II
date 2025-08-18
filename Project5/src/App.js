@@ -1,132 +1,188 @@
 import "./styles.css";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { random } from "lodash";
 
-const API_KEY = "eaa59e2a613e46a784ba5beba4cc3f8a";
-function RandomRecipe() {
-  const [recipe, setRecipe] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [nutritionFacts, setNutritionFacts] = useState([]);
+const BouncingBalls = ({ numBalls, ballSize }) => {
+  const canvasRef = useRef(null);
+  const animationId = useRef(null);
+  const timeRef = useRef(null);
 
-  // help from source: https://www.youtube.com/watch?v=cuEtnrL9-H0
-  const fetchRecipe = (mealType) => {
-    setLoading(true);
-    // const dietQuery = diets.map((diet) => `&diet=${diet}`).join(",");
-    // console.log(dietQuery);
-    fetch(
-      `https://api.spoonacular.com/recipes/random?apiKey=${API_KEY}&number=1&include-tags=${mealType}`
-    )
-      .then((res) => {
-        if (res.status === 402) {
-          setError("Out of daily points for fetching recipes.");
-        }
-        return res.json();
-      })
-      .then((data) => {
-        if (data && data.recipes && data.recipes.length > 0) {
-          setRecipe(data.recipes[0]);
-          console.log(data);
-          console.log(recipe);
-        } else {
-          console.log("No recipes found");
-          setError("No recipe was found.");
-        }
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error.message);
-        setError(error.message);
-        setLoading(false);
-      });
-  };
+  const [balls, setBalls] = useState([]);
+  const [speed, setSpeed] = useState(1);
+  const [collisionCount, setCollisionCount] = useState(0);
+  const [elapsedTime, setElapsedTime] = useState(0);
 
-  return (
-    <div className="recipe">
-      <button onClick={() => fetchRecipe("breakfast")}>Breakfast Recipe</button>
-      <button onClick={() => fetchRecipe("lunch")}>Lunch Recipe</button>
-      <button onClick={() => fetchRecipe("dinner")}>Dinner Recipe</button>
+  // https://www.kirupa.com/html5/animating_with_requestAnimationFrame.htm
+  function Ball(x, y, dx, dy, size, number) {
+    // set positions x, y -- set velocties dx, dy  -- set ball size.
+    this.x = x;
+    this.y = y;
 
-      {loading && <p>Loading...</p>}
-      {error && <p>Heads Up: {error}</p>}
-      {!loading && !error && (
-        <>
-          <h2 className="recipe-title">{recipe.title}</h2>
-          <h3>Ingredient:</h3>
-          <ul className="recipe-list">
-            {recipe.extendedIngredients.map((ingredient, index) => (
-              <li key={index}>{ingredient.name}</li>
-            ))}
-          </ul>
-        </>
-      )}
+    this.dx = dx;
+    this.dy = dy;
+    this.size = size;
+    this.number = number;
 
-      {/* Recipe img */}
-      <p className="nutrition-facts">Nutrition Facts</p>
-    </div>
-  );
-}
+    // draw circle
+    this.draw = function () {
+      const ctx = canvasRef.current.getContext("2d");
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = "red";
+      ctx.fill();
 
-function Instructions() {
-  const [instructions, setInstructions] = useState("");
-}
+      // add number to ball
+      ctx.fillStyle = "black";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(this.number, this.x, this.y);
+    };
 
-function Diet() {
-  const [diet, setDiet] = useState("");
-  const [dietData, setDietData] = useState([]);
+    // update position and check for collisions
+    this.update = function () {
+      let collided = false;
+      // check for collsions with left/right wall
+      if (
+        this.x + this.size >= canvasRef.current.width ||
+        this.x - this.size <= 0
+      ) {
+        this.dx = -this.dx;
+        collided = true;
+      }
+      if (
+        this.y + this.size >= canvasRef.current.height ||
+        this.y - this.size <= 0
+      ) {
+        this.dy = -this.dy;
+        collided = true;
+      }
 
-  const inputHandler = (e) => {
-    setDiet(e.target.value);
-  };
+      if (collided) {
+        setCollisionCount((prevCount) => prevCount + 1);
+      }
+      // give balls speed and velocity
+      this.x += this.dx * speed;
+      this.y += this.dy * speed;
+    };
+  }
 
-  const handleSave = () => {
-    if (diet.trim() !== "") {
-      setDietData([...dietData, diet]);
-      setDiet("");
+  // function to create balls in a random position on the canvas
+  const createBalls = (canvasWidth, canvasHeight) => {
+    const ballsArray = [];
+    // for loop to initialize each ball
+    for (let i = 0; i < numBalls; i++) {
+      // intialize x, y, dx, dy values for the ball
+      const size = ballSize;
+      const x = random(canvasWidth - size);
+      const y = random(canvasHeight - size);
+      const dx = (Math.random() - 0.5) * 2;
+      const dy = (Math.random() - 0.5) * 2;
+      // push new Ball into the array
+      ballsArray.push(new Ball(x, y, dx, dy, size, i + 1));
     }
+    setBalls(ballsArray);
   };
 
-  const handleClear = () => {
-    setDietData([]);
+  // function to update position of balls as they move across the canvas
+  const updateAnimation = () => {
+    const ctx = canvasRef.current.getContext("2d");
+    ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+
+    // use forEach to update and draw each ball in the array
+    balls.forEach((ball) => {
+      ball.update();
+      ball.draw();
+    });
+    // request next animation frame
+    animationId.current = requestAnimationFrame(updateAnimation);
+  };
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    // set dimenisions of canvas
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // initialize animation
+    animationId.current = requestAnimationFrame(updateAnimation);
+
+    // start initial time reference
+    timeRef.current = Date.now();
+    return () => {
+      cancelAnimationFrame(animationId.current);
+    };
+  }, [numBalls, ballSize, speed]);
+
+  // initialize timer on start
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const currentTime = Date.now();
+      const elapsedTimeInSeconds = (currentTime - timeRef.current) / 1000;
+      setElapsedTime(elapsedTimeInSeconds / 60);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  // On button click
+  const handleToggleAnimation = () => {
+    // Reset increments and balls
+    setBalls([]);
+    setElapsedTime(0);
+
+    // clear canvas
+    const ctx = canvasRef.current.getContext("2d");
+    ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+
+    setCollisionCount(0);
+
+    // create new balls
+    createBalls(canvasRef.current.width, canvasRef.current.height);
+
+    // request next frame
+    animationId.current = requestAnimationFrame(updateAnimation);
+
+    // reset time reference
+    timeRef.current = Date.now();
+  };
+
+  const handleSpeedChange = (e) => {
+    setSpeed(e.target.value);
   };
 
   return (
-    <div className="diet-wrapper">
-      <label>Dietary Restrictions: </label>
-      <input name="diet" type="text" value={diet} onChange={inputHandler} />
-      <button onClick={handleSave}>Save Diet</button>
-      <div>
-        <h3>Saved Diet: </h3>
-        <div>{dietData.join(", ")}</div>
-      </div>
-      <button onClick={handleClear}>Remove Diet Restrictions</button>
+    <div>
+      <canvas
+        ref={canvasRef}
+        style={{ border: "2px solid black", backgroundColor: "lightgray" }}
+      ></canvas>
+      <div>Collision Count: {collisionCount} </div>
+      <div>Elapsed Time: {elapsedTime.toFixed(2)} minutes</div>
+
+      <label htmlFor="speed">Set Speed: </label>
+      <input
+        name="speed"
+        type="range"
+        min="1"
+        max="30"
+        step="2"
+        value={speed}
+        onChange={handleSpeedChange}
+      />
+
+      <button onClick={handleToggleAnimation}>Start/Reset</button>
     </div>
   );
-}
-
-function GroceryList() {
-  const [items, setItems] = useState([]);
-  const [itemsInHand, setItemsInHand] = useState([]);
-  return <div className="grocery-list">[Grocery List]</div>;
-}
+};
 
 export default function App() {
-  /*
-  TODO/FIX: lift child component state to use diets in the fetch call
-  const [diets, setDiets] = useState("");
-
-  const handleAddDiet = (newDiet) => {
-    setDiets([...diets, newDiet]);
-  };
-  */
   return (
     <div className="App">
-      <h1>Random Recipe Suggestions</h1>
-      <Diet />
-      <hr />
+      <header className="App-header">
+        <h1>Bouncing Balls</h1>
+      </header>
       <div>
-        <RandomRecipe />
-        <Instructions />
-        <GroceryList />
+        <BouncingBalls numBalls={3} ballSize={20} />
       </div>
     </div>
   );
