@@ -7,7 +7,7 @@ const kmToMiles = (km) => Math.round(km * 0.621371);
 // sortMoonsByField function: sort moons by diameter --> Largest to smallest
 const sortMoonsByField = (moons = [], field = "", sortOrder = "D") => {
   //deepClone from lodash
-  deepCopyMoons = cloneDeep(moons);
+  const deepCopyMoons = cloneDeep(moons);
 
   // passing diameterKM property into the field parameter--on function call--will compare each of the moons diameters
   deepCopyMoons.sort((a, b) => {
@@ -37,7 +37,7 @@ const ShowJupiterMoon = (props) => {
           {name} ({diameterKM > 0 ? `${kmToMiles(diameterKM)} miles` : ""})
         </div>
         <a href={link}>
-          <img src={`/images/${image}`} alt={name} width="100" />
+          <img src={`${process.env.PUBLIC_URL}/images/${image}`} alt={name} width="100" />
         </a>
       </div>
     );

@@ -1,8 +1,8 @@
 const JupiterMoonData = [
   {
-    name: "Lo",
+    name: "Io",
     diameterKM: "3641.9",
-    image: "lo.jpg",
+    image: "Io.jpg",
     link: "https://en.wikipedia.org/wiki/Io_(moon)"
   },
   {
